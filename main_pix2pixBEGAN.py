@@ -195,15 +195,15 @@ for epoch in range(opt.niter):
     # NOTE compute L_L1 (eq.(4) in the pix2pix paper
     L_img_ = criterionCAE(x_hat, target)
     L_img = lambdaIMG * L_img_
-    if lambdaIMG <> 0: 
+    if lambdaIMG != 0: 
       #L_img.backward(retain_graph=True) # in case of current version of pytorch
-      L_img.backward(retain_variables=True)
+      L_img.backward(create_graph=True)
 
     # NOTE compute L_G
     recon_fake = netD(x_hat) # reuse previously computed x_hat
     errG_ = torch.mean(torch.abs(recon_fake - x_hat))
     errG = lambdaGAN * errG_
-    if lambdaGAN <> 0:
+    if lambdaGAN != 0:
       errG.backward()
     # update praams
     optimizerG.step()
@@ -212,7 +212,7 @@ for epoch in range(opt.niter):
     # NOTE compute k_t and M_global
     balance = (opt.gamma * errD_real - errD_fake).data[0]
     k = min(max(k + opt.lambda_k * balance, 0), 1)
-    measure = errD_real.data[0] + np.abs(balance)
+    measure = errD_real.data[0].cuda() + np.abs(balance).cuda()
     M_global.update(measure, target.size(0))
 
     # logging
