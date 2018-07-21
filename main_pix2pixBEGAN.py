@@ -248,8 +248,11 @@ for epoch in range(opt.niter):
         val_batch_output[idx*5+4,:,:,:].copy_(recon_fake.data.squeeze(0))
       vutils.save_image(val_batch_output, '%s/generated_epoch_%08d_iter%08d.png' % \
         (opt.exp, epoch, ganIterations), nrow=10, normalize=True)
+      print("Succesfully saved image into", opt.exp)
 
   # do checkpointing
-  torch.save(netG.state_dict(), '%s/netG_epoch_%d.pth' % (opt.exp, epoch))
-  torch.save(netD.state_dict(), '%s/netD_epoch_%d.pth' % (opt.exp, epoch))
+  if epoch % 50 == 49:
+      torch.save(netG.state_dict(), '%s/netG_epoch_%d.pth' % (opt.exp, epoch))
+      torch.save(netD.state_dict(), '%s/netD_epoch_%d.pth' % (opt.exp, epoch))
+print("Closing..")
 trainLogger.close()
